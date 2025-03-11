@@ -13,7 +13,7 @@ const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
     const schemaDump = await fs.readFile('schema.sql', 'utf8');
     console.log('Schema file read successfully');
 
-    const totalRows = 500;
+    const totalRows = 200;
     console.log(`Creating ${totalRows} rows of data`);
 
     console.log('Calling Inference Endpoint...');
