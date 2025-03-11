@@ -14,9 +14,9 @@ const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
     console.log('Schema file read successfully');
 
     const totalRows = 10;
-    console.log(`Create ${totalRows} rows of data`);
+    console.log(`Creating ${totalRows} rows of data`);
 
-    console.log('Calling Inferance Endpoint...');
+    console.log('Calling Inference Endpoint...');
     const response = await hf.textGeneration({
       parameters: {
         max_new_tokens: 1000,
@@ -43,8 +43,20 @@ const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
       `,
     });
 
-    const insertStatements = response.generated_text.match(/INSERT INTO .*?;/gs);
-    console.log(insertStatements ? insertStatements.join('\n') : 'No valid SQL statements found.');
+    const generatedText = response.generated_text.trim();
+    const insertStatements = generatedText.match(/INSERT INTO .*?;/gs);
+
+    if (insertStatements && insertStatements.length > 0) {
+      const sqlContent = insertStatements.join('\n');
+      console.log('Valid SQL INSERT statements generated:\n');
+      console.log(sqlContent);
+
+      // Write the SQL INSERT statements to the data.sql file
+      await fs.writeFile('./data.sql', sqlContent);
+      console.log('SQL INSERT statements have been written to data.sql');
+    } else {
+      console.log('❌ No valid SQL INSERT statements found.');
+    }
   } catch (error) {
     console.error('❌ Error:', error.message);
   }
