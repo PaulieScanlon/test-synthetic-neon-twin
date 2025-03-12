@@ -5,7 +5,10 @@ import { HfInference } from '@huggingface/inference';
 dotenv.config();
 
 const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
-  'https://yu2080vv4riz3n34.us-east-1.aws.endpoints.huggingface.cloud' // qwq-32b-ola
+  'https://s9r49ra75wb06hk4.us-east-1.aws.endpoints.huggingface.cloud' // sqlcoder-7b-2-mxr: https://huggingface.co/defog/sqlcoder-7b-2
+  // 'https://yt9khig45jjnc6dr.us-east-1.aws.endpoints.huggingface.cloud' // llama-2-7b-instruct-text2sql-chb: https://huggingface.co/support-pvelocity/Llama-2-7B-instruct-text2sql
+
+  // 'https://yu2080vv4riz3n34.us-east-1.aws.endpoints.huggingface.cloud' // qwq-32b-ola: https://huggingface.co/Qwen/QwQ-32B
 );
 
 (async () => {
@@ -13,7 +16,7 @@ const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
     const schemaDump = await fs.readFile('schema.sql', 'utf8');
     console.log('Schema file read successfully');
 
-    const totalRows = 200;
+    const totalRows = 10;
     console.log(`Creating ${totalRows} rows of data`);
 
     console.log('Calling Inference Endpoint...');
@@ -24,16 +27,17 @@ const hf = new HfInference(process.env.HF_ACCESS_TOKEN).endpoint(
         top_p: 0.9,
       },
       inputs: `
-        You are an expert database administrator. Given the following SQL schema, please generate ${totalRows} valid SQL INSERT statements per table, ensuring the following:
 
-        1. Generate sample data for every table defined in the schema
-        2. Do NOT include any explanations, comments, or extra text—only output the INSERT statements.
+        ### Task
+        Generate a ${totalRows} SQL INSERT statements based on the following Database Schema
 
-        Below is the SQL schema provided. Please analyze the schema and generate the appropriate INSERT statements:
-
+        ### Database Schema
+        The query will run on a database with the following schema:
         ${schemaDump}
 
+        ### Answer
         Output only the SQL INSERT statements, with no explanations or comments.
+  
       `,
     });
 
